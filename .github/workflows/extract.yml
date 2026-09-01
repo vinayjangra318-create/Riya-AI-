@@ -1,0 +1,41 @@
+name: Extract Project From Zip
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract zip if present
+        run: |
+          ZIPFILE=$(find . -maxdepth 1 -name "*.zip" | head -1)
+          if [ -n "$ZIPFILE" ]; then
+            echo "Found zip: $ZIPFILE"
+            unzip -o "$ZIPFILE" -d _extracted
+            INNER=$(find _extracted -maxdepth 1 -mindepth 1 -type d | head -1)
+            if [ -n "$INNER" ]; then
+              cp -r "$INNER"/. .
+            else
+              cp -r _extracted/. .
+            fi
+            rm -rf _extracted "$ZIPFILE"
+          else
+            echo "No zip found, skipping"
+          fi
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Auto-extract project files from zip"
+          git push
