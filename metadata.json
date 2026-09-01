@@ -1,0 +1,6 @@
+{
+  "name": "Riya AI",
+  "description": "A dark cinematic, luxury glass Android mobile companion app featuring Riya, an intimate romantic AI with dynamic moods, deep memory, and personalized Gemini-powered conversations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
